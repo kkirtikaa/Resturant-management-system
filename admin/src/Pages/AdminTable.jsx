@@ -1,0 +1,97 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { backendUrl } from "../App";
+
+const AdminTable = () => {
+  const [reservations, setReservations] = useState([]);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${backendUrl}/api/reservations/delete/${ id } `);
+      toast.success('Reservation deleted successfully')
+
+      
+    } catch (error) {
+      console.log("Error deleting reservations")
+      
+    }
+  }
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        const response = await axios.get(
+          backendUrl + "/api/reservations/get"
+        );
+
+        console.log("API response:", response.data);
+
+        // always ensure array
+        if (Array.isArray(response.data)) {
+          setReservations(response.data);
+        } else if (response.data.reservations) {
+          setReservations(response.data.reservations);
+        } else {
+          setReservations([]);
+        }
+      } catch (error) {
+        console.log("Error fetching reservations:", error);
+        setReservations([]);
+      }
+    };
+
+    fetchReservations();
+  }, []);
+
+  return (
+    <div className="min-h-screen p-6">
+      <h2 className="text-3xl font-bold text-gray-700 text-center mb-6">
+        Restaurant Reservations
+      </h2>
+
+      <div className="overflow-x-auto">
+        <table className="w-full shadow-lg rounded-xl">
+          <thead>
+            <tr className="bg-amber-500 text-white text-left">
+              <th className="p-3">Name</th>
+              <th className="p-3">Email</th>
+              <th className="p-3">Phone</th>
+              <th className="p-3">Date</th>
+              <th className="p-3">Time</th>
+              <th className="p-3">Guests</th>
+              <th className="p-3">Delete</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {(!reservations || reservations.length === 0) ? (
+              <tr>
+                <td colSpan="7" className="text-center p-4">
+                  No Reservations Found
+                </td>
+              </tr>
+            ) : (
+              reservations.map((res, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50">
+                  <td className="p-3">{res.name}</td>
+                  <td className="p-3">{res.email}</td>
+                  <td className="p-3">{res.phone}</td>
+                  <td className="p-3">{res.date}</td>
+                  <td className="p-3">{res.time}</td>
+                  <td className="p-3">{res.guests}</td>
+                  <td className="p-3">
+                    <button onClick= {(handleDelete(res._id))} className="bg-red-500 text-white px-3 py-1 rounded">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default AdminTable;
