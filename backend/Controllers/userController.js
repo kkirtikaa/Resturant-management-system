@@ -2,8 +2,13 @@ import jwt from 'jsonwebtoken'
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token =jwt.sign(email+password, process.env.JWT_SECRET)
+        const normalizedEmail = (email || '').trim().toLowerCase()
+        const normalizedPassword = (password || '').trim()
+        const adminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase()
+        const adminPassword = (process.env.ADMIN_PASSWORD || '').trim()
+
+        if (normalizedEmail === adminEmail && normalizedPassword === adminPassword) {
+            const token = jwt.sign(normalizedEmail + normalizedPassword, process.env.JWT_SECRET)
             res.json({
                 success: true,
                 token, 
@@ -17,9 +22,9 @@ const adminLogin = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.json({
+        res.status(500).json({
             success: false,
-            message: ErrorEvent.message
+            message: error.message
         })
     }
 }
