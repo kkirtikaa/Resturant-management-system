@@ -4,7 +4,7 @@ import Slidebar from './Components/Slidebar'
 import AddMenu from './Pages/AddMenu'
 import ListMenu from './Pages/ListMenu'
 import AdminTable from './Pages/AdminTable'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -29,9 +29,11 @@ const App = () => {
           <Slidebar setToken={setToken} />
           <div className='w-[70%] ml-[max(5vw,25px)] my-8 text-black text-base'>
             <Routes>
+              <Route path='/' element={<Navigate to='/add' replace />} />
               <Route path='/add' element={<AddMenu token={token} />} />
               <Route path='/list' element={<ListMenu token={token} />} />
               <Route path='/table' element={<AdminTable token={token} />} />
+              <Route path='*' element={<Navigate to='/add' replace />} />
             </Routes>
           </div>
         </div>
